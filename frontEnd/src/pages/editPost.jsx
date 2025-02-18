@@ -1,7 +1,7 @@
 import React from 'react'
 import Header from '../components/Header' 
 
-const editPost = () => {
+const EditPost = () => {
   return (
     <>
     <Header/>
@@ -10,4 +10,4 @@ const editPost = () => {
   )
 }
 
-export default editPost
+export default EditPost;
