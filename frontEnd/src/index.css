@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.bigDivPosts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 10px;
+    gap: 20px;
+}
+
+.Card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+    width: 300px;
+    transition: transform 0.3s ease;
+}
+
+.Card:hover {
+    transform: translateY(-5px);
+}
