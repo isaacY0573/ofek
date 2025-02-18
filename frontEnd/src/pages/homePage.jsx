@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import PersonCard from '../components/Card';
-import jsonData from '../pages/Trial.json';
+import jsonData from './Trial.json';
 
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
