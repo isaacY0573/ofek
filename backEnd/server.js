@@ -25,17 +25,27 @@ app.get('/', async (req, res) => {
 // Route to delete a single user
 app.delete('/delete/:id', async (req, res) => {
   try {
-    const userId = req.params.id;
-    const deletedUser = await User.findByIdAndDelete(userId);
-    if (!deletedUser){
-     return  res.status(404).json({ message: 'User not found' });
-  }
-  res.json({ message: 'User deleted successfully', deletedUser });
+    const  id  = Number (req.params.id);
+     
+    
+    // Check if ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully' });
 
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting user', error });
+    res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
 });
+
 
 
 

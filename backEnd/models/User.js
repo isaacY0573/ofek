@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  id: Number,
+  _id: Number,
   name: String,
-  lastname: String,
+  lastName: String,
   age: Number,
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('vlogusers', userSchema);
 
 
 module.exports = User;
