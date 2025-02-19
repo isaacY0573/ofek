@@ -5,6 +5,7 @@ const http = require('http');
 
 const app = express();
 const uri = "mongodb+srv://isaacY:Yy0573115272@cluster0.dsb75.mongodb.net/isaacY?retryWrites=true&w=majority&appName=Cluster0";
+app.use(express.json());
 
 
 // Connect to MongoDB
@@ -13,7 +14,7 @@ mongoose.connect(uri)
   .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
    
 // Route to fetch all usersJ
-app.get('/', async (req, res) => {
+app.get('/posts', async (req, res) => {
   try {
     const users = await User.find();  // Fetch all users from DB
     res.json(users);
@@ -22,10 +23,50 @@ app.get('/', async (req, res) => {
   }
 });
 
+// Route to fetch a single user
+app.get('/user/:id', async (req, res) => {
+  try {
+    const id = req.params.id; // Keep it as a string
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user', error });
+  }
+});
+
+// Route to update a user
+app.patch('/update/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { name, lastName, age } = req.body;
+
+    // Check if ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, { name, lastName, age }, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(updatedUser);
+
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating user', error: error.message });
+  }
+});
+
 // Route to delete a single user
 app.delete('/delete/:id', async (req, res) => {
   try {
-    const  id  = Number (req.params.id);
+    const  id  =  (req.params.id);
      
     
     // Check if ID is a valid MongoDB ObjectId
@@ -45,6 +86,7 @@ app.delete('/delete/:id', async (req, res) => {
     res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
 });
+
 
 
 
