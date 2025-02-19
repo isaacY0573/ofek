@@ -42,7 +42,6 @@ app.get('/user/:id', async (req, res) => {
 });
 
 // route to add a new post
-// Route to add a new user
 app.post('/add', async (req, res) => {
   try {
     const { name, lastName, age } = req.body;
@@ -59,9 +58,6 @@ app.post('/add', async (req, res) => {
     res.status(500).json({ message: 'Error adding user', error: error.message });
   }
 });
-
-
-
 
 // Route to update a user
 app.patch('/update/:id', async (req, res) => {
