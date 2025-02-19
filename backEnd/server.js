@@ -2,10 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./models/User'); // Import User model
 const http = require('http');
-
 const app = express();
-const uri = "mongodb+srv://isaacY:Yy0573115272@cluster0.dsb75.mongodb.net/isaacY?retryWrites=true&w=majority&appName=Cluster0";
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+const uri = "mongodb+srv://isaacY:Yy0573115272@cluster0.dsb75.mongodb.net/isaacY?retryWrites=true&w=majority&appName=Cluster0";
 
 
 // Connect to MongoDB
@@ -38,6 +40,28 @@ app.get('/user/:id', async (req, res) => {
     res.status(500).json({ message: 'Error fetching user', error });
   }
 });
+
+// route to add a new post
+// Route to add a new user
+app.post('/add', async (req, res) => {
+  try {
+    const { name, lastName, age } = req.body;
+
+    if (!name || !lastName || !age) {
+      return res.status(400).json({ message: 'All fields (name, lastName, age) are required' });
+    }
+
+    const newUser = new User({ name, lastName, age });
+    await newUser.save();
+
+    res.status(201).json({ message: 'User added successfully', user: newUser });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding user', error: error.message });
+  }
+});
+
+
+
 
 // Route to update a user
 app.patch('/update/:id', async (req, res) => {
