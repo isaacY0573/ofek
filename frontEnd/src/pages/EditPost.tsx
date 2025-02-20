@@ -7,108 +7,107 @@ import {
   Typography,
   Container,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 
-const EditPost: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Ensure id is received as a string
-  const navigate = useNavigate();
+interface Post {
+  _id: string;
+  name: string;
+  lastName: string;
+  age: number;
+}
 
-  const [name, setName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [age, setAge] = useState<string>("");
+const EditPost: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    const postId = Number(id);
-    if (isNaN(postId)) {
-      navigate("/"); // Redirect to home if 'id' is invalid
-      return;
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/posts");
+        if (!response.ok) throw new Error("Failed to fetch posts");
+
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  const handleEditClick = (post: Post) => {
+    setEditingPost(post);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editingPost) {
+      setEditingPost({ ...editingPost, [e.target.name]: e.target.value });
     }
+  };
 
-    const posts = JSON.parse(localStorage.getItem("posts") ?? "[]");
-    const post = posts.find((post: { id: number }) => post.id === postId);
-
-    if (post) {
-      setName(post.name);
-      setLastName(post.lastName);
-      setAge(String(post.age)); // Ensure age is a string for controlled input
-    } else {
-      navigate("/");
-    }
-  }, [id, navigate]);
-
-  const handleSubmit = () => {
-    if (!name || !lastName || !age) {
+  const handleUpdate = async () => {
+    if (!editingPost || !editingPost.name || !editingPost.lastName || !editingPost.age) {
       setError("All fields are required.");
       return;
     }
 
-    const postId = Number(id);
-    if (isNaN(postId) || postId <= 0) {
-      setError("Invalid post ID.");
-      return;
+    try {
+      const response = await fetch(`http://localhost:3000/update/${editingPost._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editingPost.name,
+          lastName: editingPost.lastName,
+          age: Number(editingPost.age),
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update post");
+
+      // Update the UI
+      setPosts(posts.map(post => (post._id === editingPost._id ? editingPost : post)));
+      setEditingPost(null);
+      setError("");
+    } catch (error) {
+      console.error("Error updating post:", error);
+      setError("Failed to update post.");
     }
-
-    if (isNaN(Number(age)) || Number(age) <= 0) {
-      setError("Age must be a positive number.");
-      return;
-    }
-
-    setError("");
-
-    const updatedPost = {
-      id: postId,
-      name,
-      lastName,
-      age: Number(age),
-    };
-
-    const existingPosts = JSON.parse(localStorage.getItem("posts") ?? "[]");
-    const postIndex = existingPosts.findIndex((post: { id: number }) => post.id === postId);
-
-    if (postIndex !== -1) {
-      existingPosts[postIndex] = updatedPost;
-      localStorage.setItem("posts", JSON.stringify(existingPosts));
-    }
-
-    navigate("/");
   };
 
   return (
     <>
       <Header />
       <Container className="mt-[100px]">
-        <Card>
-          <CardContent>
-            <TextField
-              label="First Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Age"
-              type="number"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            {error && <Typography color="error">{error}</Typography>}
-            <Button variant="contained" color="primary" onClick={handleSubmit} fullWidth>
-              Save Changes
-            </Button>
-          </CardContent>
-        </Card>
+        <Typography variant="h4" gutterBottom>
+          Edit Posts
+        </Typography>
+        {posts.map(post => (
+          <Card key={post._id} className="mb-4">
+            <CardContent>
+              <Typography variant="h6">{post.name} {post.lastName}</Typography>
+              <Typography variant="body2">Age: {post.age}</Typography>
+              <Button variant="outlined" color="primary" onClick={() => handleEditClick(post)}>
+                Edit
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+
+        {editingPost && (
+          <Card className="mt-4">
+            <CardContent>
+              <TextField label="First Name" name="name" value={editingPost.name} onChange={handleChange} fullWidth margin="normal" />
+              <TextField label="Last Name" name="lastName" value={editingPost.lastName} onChange={handleChange} fullWidth margin="normal" />
+              <TextField label="Age" type="number" name="age" value={editingPost.age} onChange={handleChange} fullWidth margin="normal" />
+              {error && <Typography color="error">{error}</Typography>}
+              <Button variant="contained" color="primary" onClick={handleUpdate} fullWidth>
+                Save Changes
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </Container>
     </>
   );
