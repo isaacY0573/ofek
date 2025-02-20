@@ -6,9 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 const uri = "mongodb+srv://isaacY:Yy0573115272@cluster0.dsb75.mongodb.net/isaacY?retryWrites=true&w=majority&appName=Cluster0";
-
 
 // Connect to MongoDB
 mongoose.connect(uri)
@@ -59,9 +57,6 @@ app.post('/add', async (req, res) => {
     res.status(500).json({ message: 'Error adding user', error: error.message });
   }
 });
-
-
-
 
 // Route to update a user
 app.patch('/update/:id', async (req, res) => {
