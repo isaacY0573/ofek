@@ -1,55 +1,57 @@
-import React from "react"; // Explicitly import React
-import { useState } from "react";
-import {
-  TextField,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  Container,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom"; // import useNavigate
-import Header from "../components/Header";
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Card, CardContent, Typography, Container } from '@mui/material';
+import Header from '../components/Header';
+import { useNavigate } from 'react-router-dom';
 
 const AddPost: React.FC = () => {
-  const [name, setName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [age, setAge] = useState<string>(""); // Store as string initially
-  const [id, setId] = useState<string>(""); // Store as string initially
-  const [error, setError] = useState<string>("");
+  const [name, setName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [age, setAge] = useState<string>(''); 
+  const [id, setId] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [post, setPost] = useState();
 
   const navigate = useNavigate(); // initialize navigate
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name || !lastName || !age || !id) {
-      setError("All fields are required.");
+      setError('All fields are required.');
       return;
     }
-    setError("");
+    setError('');
 
     // Create the new post
     const newPost = {
-      id: Number(id), // Convert to number
+      id: Number(id), 
       name,
       lastName,
-      age: Number(age), // Convert to number
+      age: Number(age),
     };
 
-    // Get current posts from localStorage or initialize with an empty array
-    const existingPosts: typeof newPost[] = JSON.parse(
-      localStorage.getItem("posts") ?? "[]"
-    );
+    // Send POST request to backend to add the post
+    try {
+      const response = await fetch('http://localhost:3000/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newPost),
+      });
 
-    // Save the new post to localStorage
-    existingPosts.push(newPost);
-    localStorage.setItem("posts", JSON.stringify(existingPosts));
-
-    // Navigate back to the home page after the post is added
-    navigate("/");
+      const data = await response.json();
+      if (data.message === 'User added successfully') {
+        // Navigate to home page after post is added
+        navigate('/');
+      } else {
+        setError(data.message);
+      }
+    } catch (error) {
+      setError('Error adding post');
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleSubmit();
     }
   };
@@ -94,12 +96,7 @@ const AddPost: React.FC = () => {
               onKeyDown={handleKeyDown}
             />
             {error && <Typography color="error">{error}</Typography>}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              fullWidth
-            >
+            <Button variant="contained" color="primary" onClick={handleSubmit} fullWidth>
               Submit
             </Button>
           </CardContent>
