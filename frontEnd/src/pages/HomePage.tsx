@@ -3,20 +3,29 @@ import Header from "../components/Header";
 import PersonCard from "../components/Card";
 
 const HomePage: React.FC = () => {
-  const [posts, setPosts] = useState<Array<{ id: number; name: string; lastName: string; age: number }>>([]);
+  const [posts, setPosts] = useState<Array<{ _id: string; name: string; lastName: string; age: number }>>([]);
 
   useEffect(() => {
-    const savedPosts = localStorage.getItem("posts"); // Get the item from localStorage
-    const parsedPosts = savedPosts ? JSON.parse(savedPosts) : []; // Parse only if it's not null
-    setPosts(parsedPosts);
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/posts"); // Adjust URL if needed
+        if (!response.ok) throw new Error("Failed to fetch posts");
+        const data = await response.json();
+        setPosts(data); // Store in state
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   return (
     <>
       <Header />
       <div className="bigDivPosts">
-        {posts.map((post, index) => (
-          <div key={`${post.id}-${index}`}>
+        {posts.map((post) => (
+          <div key={post._id}>
             <PersonCard card={post} />
           </div>
         ))}
