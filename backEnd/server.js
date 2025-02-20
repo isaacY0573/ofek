@@ -40,7 +40,6 @@ app.get('/user/:id', async (req, res) => {
 });
 
 // route to add a new post
-// Route to add a new user
 app.post('/add', async (req, res) => {
   try {
     const { name, lastName, age } = req.body;
