@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { MouseEvent } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,23 +12,30 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Link } from 'react-router-dom';  // Import Link from react-router-dom
+import { Link } from 'react-router-dom';
 
-const pages = [
+interface Page {
+  name: string;
+  path: string;
+}
+
+const pages: Page[] = [
   { name: 'Home page', path: '/' },
   { name: 'Add post', path: '/add' },
   { name: 'Edit post', path: '/edit' }
 ];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+const settings: string[] = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-  const handleOpenNavMenu = (event) => {
+const ResponsiveAppBar: React.FC = () => {
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
+
+  const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
@@ -48,7 +55,7 @@ function ResponsiveAppBar() {
           <Typography
             variant="h6"
             noWrap
-            component={Link}  // Use Link component here
+            component={Link}
             to="/"
             sx={{
               mr: 2,
@@ -103,7 +110,7 @@ function ResponsiveAppBar() {
           <Typography
             variant="h5"
             noWrap
-            component={Link}  // Use Link component here
+            component={Link}
             to="/"
             sx={{
               mr: 2,
@@ -122,7 +129,7 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               <Button
                 key={page.name}
-                component={Link}  // Use Link component here
+                component={Link}
                 to={page.path}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
