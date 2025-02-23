@@ -6,6 +6,7 @@ import {
   CardContent,
   Typography,
   Container,
+  Paper,
 } from "@mui/material";
 import Header from "../components/Header";
 
@@ -39,6 +40,7 @@ const EditPost: React.FC = () => {
 
   const handleEditClick = (post: Post) => {
     setEditingPost(post);
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top when editing
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +68,6 @@ const EditPost: React.FC = () => {
 
       if (!response.ok) throw new Error("Failed to update post");
 
-      // Update the UI
       setPosts(posts.map(post => (post._id === editingPost._id ? editingPost : post)));
       setEditingPost(null);
       setError("");
@@ -79,35 +80,67 @@ const EditPost: React.FC = () => {
   return (
     <>
       <Header />
-      <Container className="mt-[100px]">
-        <Typography variant="h4" gutterBottom>
+      <Container maxWidth="md" className="mt-[50px]">
+        <Typography variant="h4" gutterBottom align="center">
           Edit Posts
         </Typography>
+
+        {editingPost && (
+          <Paper elevation={3} className="p-6 mb-6">
+            <Typography variant="h5" gutterBottom>
+              Editing: {editingPost.name} {editingPost.lastName}
+            </Typography>
+            <TextField
+              label="First Name"
+              name="name"
+              value={editingPost.name}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Last Name"
+              name="lastName"
+              value={editingPost.lastName}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Age"
+              type="number"
+              name="age"
+              value={editingPost.age}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            {error && <Typography color="error">{error}</Typography>}
+            <Button variant="contained" color="primary" onClick={handleUpdate} fullWidth>
+              Save Changes
+            </Button>
+          </Paper>
+        )}
+
         {posts.map(post => (
-          <Card key={post._id} className="mb-4">
+          <Card key={post._id} className="mb-4 shadow-lg">
             <CardContent>
-              <Typography variant="h6">{post.name} {post.lastName}</Typography>
-              <Typography variant="body2">Age: {post.age}</Typography>
-              <Button variant="outlined" color="primary" onClick={() => handleEditClick(post)}>
+              <Typography variant="h6">
+                {post.name} {post.lastName}
+              </Typography>
+              <Typography className="p-4" variant="body2">Age: {post.age}</Typography>
+                <Button
+                variant="outlined"
+                color="primary"
+                className="m-2"
+                onClick={() => handleEditClick(post)}
+                style={{ textTransform: "none", borderRadius: "8px" }}
+                >
                 Edit
-              </Button>
+                </Button>
             </CardContent>
           </Card>
         ))}
-
-        {editingPost && (
-          <Card className="mt-4">
-            <CardContent>
-              <TextField label="First Name" name="name" value={editingPost.name} onChange={handleChange} fullWidth margin="normal" />
-              <TextField label="Last Name" name="lastName" value={editingPost.lastName} onChange={handleChange} fullWidth margin="normal" />
-              <TextField label="Age" type="number" name="age" value={editingPost.age} onChange={handleChange} fullWidth margin="normal" />
-              {error && <Typography color="error">{error}</Typography>}
-              <Button variant="contained" color="primary" onClick={handleUpdate} fullWidth>
-                Save Changes
-              </Button>
-            </CardContent>
-          </Card>
-        )}
       </Container>
     </>
   );
