@@ -30,6 +30,12 @@ const HomePage: React.FC = () => {
           </div>
         ))}
       </div>
+      <button 
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
+        className="fixed bottom-5 right-5 bg-blue-500 text-white border-none rounded-full w-12 h-12 flex justify-center items-center text-2xl cursor-pointer"
+      >
+        ↑
+      </button>
     </>
   );
 };
