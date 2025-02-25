@@ -9,6 +9,9 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  server: {
+      port: 5173
+  },    
 })
 
 
@@ -24,7 +27,8 @@ export default defineConfig({
 //   root: "src", // Ensure Vite knows the root folder
 //   build: {
 //     outDir: "dist",
-//   },
+//   }, // Ensure the output directory is dist
+//   server: {    // Ensure the server runs on port 3000          
 // });
 
 
