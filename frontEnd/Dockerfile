@@ -12,6 +12,14 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+
+
+
+############################################################################################################
+
+
+
+
 # Use a lightweight Nginx image to serve the built app
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/project
