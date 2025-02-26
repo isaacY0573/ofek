@@ -1,3 +1,4 @@
+import { FaTrash } from "react-icons/fa";
 import React, { useState, useEffect } from "react";
 import {
   TextField,
@@ -40,7 +41,7 @@ const EditPost: React.FC = () => {
 
   const handleEditClick = (post: Post) => {
     setEditingPost(post);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top when editing
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +69,7 @@ const EditPost: React.FC = () => {
 
       if (!response.ok) throw new Error("Failed to update post");
 
-      setPosts(posts.map(post => (post._id === editingPost._id ? editingPost : post)));
+      setPosts(posts.map((post) => (post._id === editingPost._id ? editingPost : post)));
       setEditingPost(null);
       setError("");
     } catch (error) {
@@ -76,6 +77,26 @@ const EditPost: React.FC = () => {
       setError("Failed to update post.");
     }
   };
+
+
+  //deleting new posts
+  const handleDelete = async (postId: string) => {
+    try {
+      const response = await fetch(`http://localhost:3000/delete/${postId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to delete post");
+
+      // Remove the deleted post from state
+      setPosts(posts.filter((post) => post._id !== postId));
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
+
+
 
   return (
     <>
@@ -122,22 +143,33 @@ const EditPost: React.FC = () => {
           </Paper>
         )}
 
-        {posts.map(post => (
+        {posts.map((post) => (
           <Card key={post._id} className="mb-4 shadow-lg">
             <CardContent>
               <Typography variant="h6">
                 {post.name} {post.lastName}
               </Typography>
-              <Typography className="p-4" variant="body2">Age: {post.age}</Typography>
+              <Typography className="p-4" variant="body2">
+                Age: {post.age}
+              </Typography>
+              <div className="flex justify-center gap-2">
                 <Button
-                variant="outlined"
-                color="primary"
-                className="m-2"
-                onClick={() => handleEditClick(post)}
-                style={{ textTransform: "none", borderRadius: "8px" }}
+                  variant="outlined"
+                  color="primary"
+                  className="m-2"
+                  onClick={() => handleEditClick(post)}
+                  style={{ textTransform: "none", borderRadius: "8px" }}
                 >
-                Edit
+                  Edit
                 </Button>
+                <button
+                  onClick={() => handleDelete(post._id)}
+                  className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-all duration-300"
+                >
+                  <FaTrash className="text-white text-sm" />
+                  Delete
+                </button>
+              </div>
             </CardContent>
           </Card>
         ))}
